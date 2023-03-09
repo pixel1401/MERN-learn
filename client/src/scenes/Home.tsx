@@ -1,12 +1,14 @@
 import { FC } from "react";
+import Navbar from "@/scenes/Navbar/Navbar";
+import { Box } from "@mui/material";
 
 
 
 const HomePage : FC = () => {
     return (
-        <>
-            <h1>Hello</h1>
-        </>
+        <Box>
+            <Navbar/>
+        </Box>
     )
 }
 

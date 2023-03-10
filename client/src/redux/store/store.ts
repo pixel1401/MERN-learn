@@ -11,11 +11,13 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { mainApi } from '@/api';
 
 
 const persistConfig = { key: "root", storage, version: 1 };
 
 const rootReducer = combineReducers({
+    [mainApi.reducerPath]: mainApi.reducer,
     authSlice : authSlice  ,
     counter : counterSlice
 });
@@ -24,14 +26,26 @@ const rootReducer = combineReducers({
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 
+
+const middlewareHandler = (getDefaultMiddleware: any) => {
+  const middlewareList = [
+      ...getDefaultMiddleware({
+          serializableCheck: {
+            ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+          },
+      }),
+      mainApi.middleware,
+  ];
+  
+  return middlewareList;
+};
+
+
+
+
 export const store = configureStore({
   reducer: persistedReducer ,
-  middleware: (getDefaultMiddleware) =>
-  getDefaultMiddleware({
-    serializableCheck: {
-      ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-    },
-  }),
+  middleware: (getDefaultMiddleware) => middlewareHandler(getDefaultMiddleware)
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

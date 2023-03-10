@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
     Box,
     Button,
@@ -8,13 +8,14 @@ import {
     useTheme,
 } from "@mui/material";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import { Formik } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import Dropzone from "react-dropzone";
+import Dropzone, { useDropzone } from "react-dropzone";
 import FlexBetween from "@/components/FlexBetween/FlexBetween";
 import { setLogin } from "@/redux/features/authSlice";
+import { useLazyLoginQuery, useLazyRegisterQuery } from "@/api";
 
 
 
@@ -45,27 +46,27 @@ interface InitialValuesRegister {
     password: string,
     location: string,
     occupation: string,
-    picture: string,
+    picture: File | null,
 }
 
 
-interface InitialValuesLogin {
+export interface InitialValuesLogin {
     email: string,
     password: string,
 }
 
 
-const initialValuesRegister : InitialValuesRegister = {
+const initialValuesRegister: InitialValuesRegister = {
     firstName: "",
     lastName: "",
     email: "",
     password: "",
     location: "",
     occupation: "",
-    picture: "",
+    picture: null,
 };
 
-const initialValuesLogin : InitialValuesLogin = {
+ const initialValuesLogin: InitialValuesLogin = {
     email: "",
     password: "",
 };
@@ -79,22 +80,35 @@ const Form = () => {
     const isLogin = pageType === "login";
     const isRegister = pageType === "register";
 
-    const register = async (values : any , onSubmitProps : any) => {
-        // this allows us to send form info with image
-        const formData = new FormData();
-        for (let value in values) {
-            formData.append(value, values[value] );
-        }
-        formData.append("picturePath", values.picture.name);
 
-        const savedUserResponse = await fetch(
-            "http://localhost:3001/auth/register",
-            {
-                method: "POST",
-                body: formData,
-            }
-        );
-        const savedUser = await savedUserResponse.json();
+    let [fetchLogin , {data   , isFetching , isError }] = useLazyLoginQuery();
+    let [fetchRegister ] = useLazyRegisterQuery();
+
+
+
+
+    const register = async (values: InitialValuesRegister, onSubmitProps: any) => {
+        // this allows us to send form info with image
+
+        const formData = new FormData();
+        for (let [name , value] of Object.entries(values)) {
+            formData.append(name, value );
+        }
+        formData.append("picturePath", values.picture?.name ?? '');
+        
+        // const savedUserResponse = await fetch(
+        //     "http://localhost:3001/auth/register",
+        //     {
+        //         method: "POST",
+        //         body: formData,
+        //     }
+        // );
+        // const savedUser = await savedUserResponse.json();
+
+        const savedUserResponse = await fetchRegister(formData);
+
+        const savedUser = await savedUserResponse.data;
+
         onSubmitProps.resetForm();
 
         if (savedUser) {
@@ -102,15 +116,24 @@ const Form = () => {
         }
     };
 
-    const login = async (values : any, onSubmitProps : any) => {
-        const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(values),
-        });
-        const loggedIn = await loggedInResponse.json();
+    const login = async (values: InitialValuesLogin, onSubmitProps: any) => {
+        // const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(values),
+        // });
+
+        let data = await fetchLogin(values);
+
+        
+        const loggedIn = await data.data;
         onSubmitProps.resetForm();
+        
+        console.log(loggedIn);
+        
         if (loggedIn) {
+            console.log(loggedIn);
+            
             dispatch(
                 setLogin({
                     user: loggedIn.user,
@@ -121,19 +144,19 @@ const Form = () => {
         }
     };
 
-    const handleFormSubmit = async (values : any, onSubmitProps : any) => {
-        if (isLogin) await login(values, onSubmitProps);
-        if (isRegister) await register(values, onSubmitProps);
+    const handleFormSubmit = async (values: InitialValuesLogin & InitialValuesRegister, onSubmitProps: FormikHelpers<InitialValuesLogin & InitialValuesRegister>) => {
+        if (isLogin) await login(values as InitialValuesLogin, onSubmitProps);
+        if (isRegister) await register(values as InitialValuesRegister, onSubmitProps);
     };
 
     return (
         <Formik
             onSubmit={handleFormSubmit}
-            initialValues = {(isLogin ? initialValuesLogin : initialValuesRegister) as  any} 
+            initialValues={(isLogin ? initialValuesLogin : initialValuesRegister) as InitialValuesLogin & InitialValuesRegister}
             validationSchema={isLogin ? loginSchema : registerSchema}
         >
             {({
-                values ,
+                values,
                 errors,
                 touched,
                 handleBlur,
@@ -157,12 +180,12 @@ const Form = () => {
                                     label="First Name"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
-                                    value={values.firstName }
+                                    value={values.firstName}
                                     name="firstName"
                                     error={
                                         Boolean(touched.firstName) && Boolean(errors.firstName)
                                     }
-                                    helperText={(touched.firstName && errors.firstName) as String  }
+                                    helperText={(touched.firstName && errors.firstName) as String}
                                     sx={{ gridColumn: "span 2" }}
                                 />
                                 <TextField
@@ -172,7 +195,7 @@ const Form = () => {
                                     value={values.lastName}
                                     name="lastName"
                                     error={Boolean(touched.lastName) && Boolean(errors.lastName)}
-                                    helperText={(touched.lastName && errors.lastName) as String  }
+                                    helperText={(touched.lastName && errors.lastName) as String}
                                     sx={{ gridColumn: "span 2" }}
                                 />
                                 <TextField
@@ -182,7 +205,7 @@ const Form = () => {
                                     value={values.location}
                                     name="location"
                                     error={Boolean(touched.location) && Boolean(errors.location)}
-                                    helperText={(touched.location && errors.location) as String  }
+                                    helperText={(touched.location && errors.location) as String}
                                     sx={{ gridColumn: "span 4" }}
                                 />
                                 <TextField
@@ -194,7 +217,7 @@ const Form = () => {
                                     error={
                                         Boolean(touched.occupation) && Boolean(errors.occupation)
                                     }
-                                    helperText={(touched.occupation && errors.occupation) as String }
+                                    helperText={(touched.occupation && errors.occupation) as String}
                                     sx={{ gridColumn: "span 4" }}
                                 />
                                 <Box
@@ -204,14 +227,13 @@ const Form = () => {
                                     p="1rem"
                                 >
                                     <Dropzone
-
-                                        // acceptedFiles='image/*'
+                                        accept={{ accepted: ['image/png', 'image/jpeg'] }}
                                         multiple={false}
-                                        onDrop={(acceptedFiles) =>
+                                        onDrop={ (acceptedFiles )  =>
                                             setFieldValue("picture", acceptedFiles[0])
                                         }
                                     >
-                                        {({ getRootProps, getInputProps }) => (
+                                        {({ getRootProps, getInputProps   }) => (
                                             <Box
                                                 {...getRootProps()}
                                                 border={`2px dashed ${palette.primary.main}`}
@@ -223,7 +245,7 @@ const Form = () => {
                                                     <p>Add Picture Here</p>
                                                 ) : (
                                                     <FlexBetween>
-                                                        <Typography>{values.picture.name}</Typography>
+                                                        <Typography>{values.picture?.name ?? ''}</Typography>
                                                         <EditOutlinedIcon />
                                                     </FlexBetween>
                                                 )}
@@ -241,7 +263,7 @@ const Form = () => {
                             value={values.email}
                             name="email"
                             error={Boolean(touched.email) && Boolean(errors.email)}
-                            helperText={  (touched.email && errors.email) as String  }
+                            helperText={(touched.email && errors.email) as String}
                             sx={{ gridColumn: "span 4" }}
                         />
                         <TextField
@@ -252,7 +274,7 @@ const Form = () => {
                             value={values.password}
                             name="password"
                             error={Boolean(touched.password) && Boolean(errors.password)}
-                            helperText={(touched.password && errors.password)as String }
+                            helperText={(touched.password && errors.password) as String}
                             sx={{ gridColumn: "span 4" }}
                         />
                     </Box>

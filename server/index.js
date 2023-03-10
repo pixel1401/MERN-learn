@@ -45,7 +45,7 @@ const storageConfig = multer.diskStorage({
         cb(null , 'public/assets');
     },
     filename : (req , file , cb)=> {
-        cb(null , file.originalname + '_' + Date.now());
+        cb(null , file.originalname );
     }
 }) 
 

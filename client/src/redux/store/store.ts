@@ -14,7 +14,7 @@ import storage from "redux-persist/lib/storage";
 import { mainApi } from '@/api';
 
 
-const persistConfig = { key: "root", storage, version: 1 };
+const persistConfig = { key: "root", storage, version: 1  , blacklist: [ 'api'],};
 
 const rootReducer = combineReducers({
     [mainApi.reducerPath]: mainApi.reducer,

@@ -2,38 +2,53 @@ import FlexBetween from "@/components/FlexBetween/FlexBetween";
 import UserImage from "@/components/UserImage/UserImage";
 import WidgetWrapper from "@/components/WidgetWrapper/WidgetWrapper";
 import { Box, Divider, Typography, useTheme } from "@mui/material";
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import {
     ManageAccountsOutlined,
     EditOutlined,
     LocationOnOutlined,
     WorkOutlineOutlined,
-  } from "@mui/icons-material";
-  import LinkedInIcon from '@mui/icons-material/LinkedIn';
-  import TwitterIcon from '@mui/icons-material/Twitter';
+} from "@mui/icons-material";
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import TwitterIcon from '@mui/icons-material/Twitter';
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/redux/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
+import { useGetUserInfoQuery } from "@/api";
+import {setUser as setUserDispatch} from "@/redux/features/authSlice";
 
-const UserWidget : FC = ()=> {
 
 
+
+const UserWidget: FC = () => {
+    
     const [user, setUser] = useState(null);
-  const { palette } = useTheme();
-  const navigate = useNavigate();
-  const token = useAppSelector(state => state.authSlice.token);
-  const dark = palette.secondary.dark;
-  const medium = palette.secondary.contrastText;
-  const main = palette.secondary.main;
+    const dispatch = useAppDispatch();
+    const { palette } = useTheme();
+    const navigate = useNavigate();
+    const token = useAppSelector((state) => state.authSlice.user?._id ?? '');
+    const dark = palette.secondary.dark;
+    const medium = palette.secondary.contrastText;
+    const main = palette.secondary.main;
+    
+    const {data : userInfo , error } = useGetUserInfoQuery( (token ?? '').toString()   , {
+        skip : token == null || token == '' 
+    });
+    
 
+    useEffect(()=> {
+        if(userInfo) {
+            dispatch(setUserDispatch(userInfo))
+        }
+    } , [userInfo])
 
-
+   
 
     const CustomDivider = () => {
         return (
             <>
                 <Divider sx={{
                     marginY: '15px'
-                }}/>
+                }} />
             </>
         )
     }
@@ -43,72 +58,71 @@ const UserWidget : FC = ()=> {
         <>
             <WidgetWrapper>
                 <FlexBetween>
-                    <UserImage   />
-                    <Box  marginX={'10px'} flex={'1 1 auto '} display={'flex'} flexDirection="column" justifyContent={'flex-start'}  alignContent={'flex-start'} gap={'5px'} >
-                        <Typography 
+                    <UserImage />
+                    <Box marginX={'10px'} flex={'1 1 auto '} display={'flex'} flexDirection="column" justifyContent={'flex-start'} alignContent={'flex-start'} gap={'5px'} >
+                        <Typography
                             variant="h4"
                             color={dark}
                             fontWeight="500"
                             sx={{
-                                '&:hover' : {
-                                    color : palette.primary.light,
+                                '&:hover': {
+                                    color: palette.primary.light,
                                     cursor: 'pointer'
                                 }
                             }}
-                        >Fake Peson</Typography>
-                        <Typography color={medium} >0 friends</Typography>
+                        >{userInfo?.firstName} {userInfo?.lastName}</Typography>
+                        <Typography color={medium} >{userInfo?.friends.length} friends</Typography>
                     </Box>
-                    <ManageAccountsOutlined/>
+                    <ManageAccountsOutlined />
                 </FlexBetween>
 
-                <CustomDivider/>
+                <CustomDivider />
 
                 <Box display={'flex'} flexDirection="column" gap={'10px'} justifyContent={'center'} >
-                    <Box display={'flex'} gap={'10px'} >
-                        <LocationOnOutlined fontSize="large" sx={{ color: main }}/>
-                        <Typography color={medium} >Location</Typography>
+                    <Box display={'flex'} alignItems="center"  gap={'10px'} >
+                        <LocationOnOutlined fontSize="large" sx={{ color: main }} />
+                        <Typography color={medium} > {userInfo?.location}</Typography>
                     </Box>
-                    <Box display={'flex'} gap={'10px'} >
-                        <WorkOutlineOutlined fontSize="large" sx={{ color: main }}/>
-                        <Typography color={medium}>Occupation</Typography>
+                    <Box display={'flex'} alignItems="center" gap={'10px'} >
+                        <WorkOutlineOutlined fontSize="large" sx={{ color: main }} />
+                        <Typography color={medium}>{userInfo?.occupation}</Typography>
                     </Box>
                 </Box>
 
-                <CustomDivider/>
+                <CustomDivider />
 
                 <Box display={'flex'} flexDirection="column" gap={'10px'} justifyContent={'center'}  >
                     <Box display={'flex'} gap={'10px'} justifyContent="space-between" >
                         <Typography color={medium} >Who's viewed your profile</Typography>
-                        <Typography color={main} fontWeight="500" >50</Typography>
+                        <Typography color={main} fontWeight="500" >{userInfo?.viewedProfile}</Typography>
                     </Box>
                     <Box display={'flex'} gap={'10px'} justifyContent="space-between" >
                         <Typography color={medium} >Impressions of your post</Typography>
-                        <Typography color={main} fontWeight="500" >870</Typography>
+                        <Typography color={main} fontWeight="500" >{userInfo?.impressions}</Typography>
                     </Box>
-                </Box> 
+                </Box>
 
-                <CustomDivider/>
+                <CustomDivider />
 
                 <Typography fontSize={'1rem'} color={main} fontWeight='500' mb={'1rem'} >Social Profiles</Typography>
                 <Box display={'flex'} flexDirection="column" gap={'15px'} >
                     <FlexBetween>
-                        <TwitterIcon/>
+                        <TwitterIcon />
                         <Box display={'flex'} flex="1 1 auto" marginX={'15px'} flexDirection="column"  >
                             <Typography color={main} fontWeight='500' >Twitter</Typography>
                             <Typography color={medium} >Social Network</Typography>
                         </Box>
-                        <EditOutlined sx={{ color: main }}/>
+                        <EditOutlined sx={{ color: main }} />
                     </FlexBetween>
                     <FlexBetween>
-                        <LinkedInIcon/>
+                        <LinkedInIcon />
                         <Box display={'flex'} flex="1 1 auto" marginX={'15px'} flexDirection="column"  >
                             <Typography color={main} fontWeight='500'  >Twitter</Typography>
                             <Typography color={medium} >Social Network</Typography>
                         </Box>
-                        <EditOutlined sx={{ color: main }}/>
+                        <EditOutlined sx={{ color: main }} />
                     </FlexBetween>
                 </Box>
-
             </WidgetWrapper>
         </>
     )

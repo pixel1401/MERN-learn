@@ -21,6 +21,7 @@ import User from "./models/User.js";
 import Post from "./models/Post.js";
 
 import {users , posts} from "./data/index.js"
+import { getUsers } from "./controllers/users.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -59,6 +60,9 @@ app.post("/posts" , verifyToken , upload.single("picture") , createPost);
 
 
 // ROUTES
+
+
+
 app.use('/auth' , authRoutes);
 app.use('/users' , usersRoutes);
 app.use('/posts' , postsRoutes);

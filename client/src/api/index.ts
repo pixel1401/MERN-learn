@@ -1,20 +1,26 @@
-import { User } from '@/models/User'
+import { LoginData, User } from '@/models/User'
+import { useAppSelector } from '@/redux/store/hooks'
+import { RootState } from '@/redux/store/store'
 import { InitialValuesLogin } from '@/scenes/LoginPage/Form'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-interface Post {
-    id: number
-    name: string
-}
+
 
 export const mainApi = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001' }),
+    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001' ,
+    
+    prepareHeaders:  (headers , {getState}) => {
+        const token  = (getState() as RootState ).authSlice.token ?? '';
+        headers.set('Authorization', `Bearer ${token}`);
+        return headers;
+        
+    },
+    
+    
+}),
+    keepUnusedDataFor: 0,
     endpoints: (build) => ({
 
-        getPost: build.query<Post, number>({
-            query: (id) => `post/${id}`,
-        }),
-
-        login: build.query<any, InitialValuesLogin>({
+        login: build.query<LoginData, InitialValuesLogin>({
             query(post) {
                 return {
                     url: '/auth/login',
@@ -37,7 +43,7 @@ export const mainApi = createApi({
         getUserInfo : build.query<User, string>({
             query(userId) {
                 return {
-                    url: '/users',
+                    url: '/users/getUser',
                     method: 'GET',
                     params : {
                         id : userId
@@ -45,10 +51,22 @@ export const mainApi = createApi({
                 }
             },
         }),
+
+
+        getPosts : build.query<User , null>({
+            query() {
+                return {
+                    url: '/posts',
+                    method: 'GET',
+                }
+            },
+        }),
+        
+        
         
 
     }),
 })
 
 
-export const {useLazyLoginQuery , useLazyRegisterQuery , useGetUserInfoQuery} = mainApi;
+export const {useLazyLoginQuery , useLazyRegisterQuery , useGetUserInfoQuery , useGetPostsQuery} = mainApi;

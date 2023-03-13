@@ -39,6 +39,7 @@ const Navbar: FC = () => {
                 <FlexBetween>
                     <Typography
                         fontSize={"clamp(1rem , 2rem , 2.25rem)"}
+                        marginRight={'10px'}
                         color="primary"
                         sx={{
                             "&:hover": {

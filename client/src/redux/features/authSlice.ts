@@ -1,3 +1,4 @@
+import { Post } from "@/models/Post";
 import { User } from "@/models/User";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -7,7 +8,8 @@ export interface InitialState {
     mode : "light" | "dark",
     user : null | User ,
     token : null | String,
-    posts : []
+    posts : Post[] | null,
+    friends : User[] | null
 }
 
 
@@ -16,7 +18,8 @@ const initialState : InitialState = {
     mode : "light",
     user:null,
     token : null ,
-    posts : []
+    posts : [],
+    friends: null
 }
 
 
@@ -38,23 +41,41 @@ export const authSlice = createSlice({
             state.token = null;
             state.user = null;
         },
-        setFriends : (state , action : PayloadAction<[]>) => {
-            // state.user.friends = action.payload.friends
+        setFriends : (state , action : PayloadAction<User[]>) => {
+                state.friends = action.payload;
+                if(state.user) {
+                    let friends : String[]  = [];   
+                     action.payload.map((friend) => {
+                        friends.push(friend._id);
+                        return friend 
+                    });
+                    state.user.friends = friends;
+                }
         },
-        setPosts : (state , action: PayloadAction<Pick<InitialState , 'posts'>>) => {
-            state.posts = action.payload.posts;
+        setPosts : (state , action: PayloadAction<Post[]>) => {
+            state.posts = action.payload;
         },
-        setPost : (state , action: PayloadAction<[]>) => {
-            // const updatePosts = state.posts.map(post => {
-            //     if(post._id == action.payload.posts._id) return action.payload.posts;
-            //     return post;
-            // });
+        setPost : (state , action: PayloadAction<Post>) => {
+            if(state.posts == null) return;
+            const updatePosts = state.posts?.map(post => {
+                if(post._id == action.payload._id) return action.payload;
+                return post;
+            });
+            state.posts = updatePosts;  
+        },
 
-            // state.posts = updatePosts;
+        patchLikePost: (state , action : PayloadAction<Post>) => {
+            if(state.posts == null) return;
+            state.posts = state.posts.map((post ) => {
+                if(post._id == action.payload._id) {
+                    return action.payload;
+                }
+                return post;
+            })
         }
 
     }
 })
 
-export const {setMode , setUser , setLogin , setLogout , setFriends , setPosts , setPost} = authSlice.actions;
+export const {setMode , setUser , setLogin , setLogout , setFriends , setPosts , setPost , patchLikePost} = authSlice.actions;
 export default authSlice.reducer;

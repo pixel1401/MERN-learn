@@ -6,7 +6,7 @@ import logo from "../../assets/react.svg";
 
 interface UserImageProps  {
     img? : string ,
-    size? : number
+    size? : string | number
 }
 
 

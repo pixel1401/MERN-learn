@@ -61,8 +61,9 @@ export const  getUserPosts = async (req , res) => {
 
 export const likePost = async (req , res) => {
     try {
-        const {id} = req.params;
-        const {userId} = req.body;
+
+        const {id , userId} = req.query;
+        // const {userId} = req.body;
 
         const post = await Post.findById(id);
 
@@ -85,6 +86,6 @@ export const likePost = async (req , res) => {
         res.status(200).json(updatedPost);
         
     }catch(err) {
-        res.status(404).json({message: err.message});
+        res.status(405).json({message: err.message});
     }
 }

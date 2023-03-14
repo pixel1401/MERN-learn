@@ -4,6 +4,11 @@ export interface LoginData {
     user: User
 }
 
+export interface FriendsData {
+    formattedFriends: User[];
+}
+
+
 
 export interface User {
     _id: string
@@ -12,7 +17,7 @@ export interface User {
     email: string
     password: string
     picturePath: string
-    friends: any[]
+    friends: String[]
     location: string
     occupation: string
     viewedProfile: number
@@ -21,3 +26,8 @@ export interface User {
     updatedAt: string
     __v: number
 }
+
+
+
+
+

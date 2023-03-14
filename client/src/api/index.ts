@@ -1,4 +1,5 @@
-import { LoginData, User } from '@/models/User'
+import { Post } from '@/models/Post'
+import { FriendsData, LoginData, User } from '@/models/User'
 import { useAppSelector } from '@/redux/store/hooks'
 import { RootState } from '@/redux/store/store'
 import { InitialValuesLogin } from '@/scenes/LoginPage/Form'
@@ -52,8 +53,20 @@ export const mainApi = createApi({
             },
         }),
 
+        getFriends : build.query<FriendsData, string>({
+            query(userId) {
+                return {
+                    url: '/users/getFriends',
+                    method: 'GET',
+                    params : {
+                        id : userId
+                    }
+                }
+            },
+        }),
 
-        getPosts : build.query<User , null>({
+
+        getPosts : build.query<Post[] , null>({
             query() {
                 return {
                     url: '/posts',
@@ -61,7 +74,33 @@ export const mainApi = createApi({
                 }
             },
         }),
-        
+
+
+        patchLike : build.query<Post , {id : string , userId : string}>({
+            query({id , userId}) {
+                return {
+                    url: '/posts/likePost',
+                    method: 'PATCH',
+                    params : {
+                        id , userId
+                    }
+                }
+            },
+        }),
+
+
+        patchFriend : build.query<User[] , {id : string , friendId : string }>({
+            query({id , friendId}) {
+                return {
+                    url: '/users/patchFriend',
+                    method: 'PATCH',
+                    params : {
+                        id : id,
+                        friendId : friendId
+                    }
+                }
+            },
+        }),
         
         
 
@@ -69,4 +108,5 @@ export const mainApi = createApi({
 })
 
 
-export const {useLazyLoginQuery , useLazyRegisterQuery , useGetUserInfoQuery , useGetPostsQuery} = mainApi;
+export const {useLazyLoginQuery , useLazyRegisterQuery , useGetUserInfoQuery ,  useGetFriendsQuery ,useGetPostsQuery , 
+      useLazyPatchLikeQuery , useLazyPatchFriendQuery} = mainApi;

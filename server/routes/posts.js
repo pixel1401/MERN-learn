@@ -10,6 +10,7 @@ router.get('/' , verifyToken , getFeedPosts);
 router.get('/:userId/posts' , verifyToken , getUserPosts);
 
 // UPDATE
-router.patch("/:id/like" , verifyToken , likePost);
+// router.patch("/:id/like" , verifyToken , likePost);
+router.patch("/likePost" , verifyToken , likePost);
 
 export default router;

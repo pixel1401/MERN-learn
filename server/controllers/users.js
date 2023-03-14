@@ -21,7 +21,7 @@ export const getUsers = async (req, res) => {
 export const getUserFriends = async (req, res) => {
 
     try {
-        const { id } = req.params;
+        const { id } = req.query;
         const user = await User.findById(id);
 
         const friends = await Promise.all(
@@ -35,7 +35,7 @@ export const getUserFriends = async (req, res) => {
 
         res.status(200).json({ formattedFriends });
     } catch (err) {
-        res.status(404).json({ message: err.message });
+        res.status(405).json({ message: err.message });
     }
 }
 
@@ -43,11 +43,13 @@ export const getUserFriends = async (req, res) => {
 export const addRemoveFriend = async (req, res) => {
 
     try {
-        const { id, friendId } = req.params;
+        const { id, friendId } = req.query;
 
         const user = await User.findById(id);
         const friend = await User.findById(friendId);
 
+        console.log(friend , user , id , friendId);
+        
         if (user.friends.includes(friendId)) {
             user.friends = user.friends.filter((id) => id != friendId);
             friend.friends = friend.friends.filter((curId) => curId != id);

@@ -9,7 +9,13 @@ export interface InitialState {
     user : null | User ,
     token : null | String,
     posts : Post[] | null,
-    friends : User[] | null
+    friends : User[] | null,
+    users: Users[] 
+}
+
+
+interface Users {
+    [key: string]: User | undefined;
 }
 
 
@@ -19,7 +25,8 @@ const initialState : InitialState = {
     user:null,
     token : null ,
     posts : [],
-    friends: null
+    friends: null,
+    users: []
 }
 
 
@@ -33,6 +40,34 @@ export const authSlice = createSlice({
         setUser : (state , action : PayloadAction<User>) => {
             state.user = action.payload;
         },
+
+        setUsers : (state , action: PayloadAction<{id? : string , user?: User}>) => {
+            if(action.payload.id && action.payload.user) {
+                state.users = state.users.map((user) => {
+                        
+                    if(Object.keys(user)[0] === action.payload.id) {
+                        user[`${action.payload.id}`] = action.payload.user;
+                        // Object.values(user)[0] = action.payload.user;
+                    }
+                    return user;
+                });
+                return;
+            }
+
+            
+            if(action.payload.id) {
+                for(let a of state.users) {
+                    if(Object.keys(a)[0] == action.payload.id) {
+                        return;
+                    }
+                }
+                state.users.push({
+                    [`${action.payload.id}`] : undefined
+                })
+                return;
+            }
+        },
+
         setLogin : (state , action : PayloadAction<Pick<InitialState , 'user' | 'token'>>) => {
             state.token = action.payload.token;
             state.user = action.payload.user;
@@ -53,6 +88,8 @@ export const authSlice = createSlice({
                 }
         },
         setPosts : (state , action: PayloadAction<Post[]>) => {
+            console.log(action.payload);
+            
             state.posts = action.payload;
         },
         setPost : (state , action: PayloadAction<Post>) => {
@@ -77,5 +114,5 @@ export const authSlice = createSlice({
     }
 })
 
-export const {setMode , setUser , setLogin , setLogout , setFriends , setPosts , setPost , patchLikePost} = authSlice.actions;
+export const {setMode , setUser , setUsers , setLogin , setLogout , setFriends , setPosts , setPost , patchLikePost} = authSlice.actions;
 export default authSlice.reducer;

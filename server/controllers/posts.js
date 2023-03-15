@@ -47,13 +47,12 @@ export const getFeedPosts = async (req , res) => {
 
 export const  getUserPosts = async (req , res) => {
     try{
-        const {userId} = req.params;
+        const {userId} = req.query;
         const posts = await Post.find({userId});
-
         res.status(200).json(posts);
 
     }catch(err) {
-        res.status(404).json({message: err.message});
+        res.status(405).json({message: err.message});
     }
 }
 

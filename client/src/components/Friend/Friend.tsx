@@ -41,7 +41,6 @@ const Friend : FC<FriendProps> = ({friendId , name , subtitle , userPicturePath 
         
         setIsFriend((prev) => {
             let getFriendId = friends?.find((person) => person == friendId);
-            console.log(isFriend , friendId , friends);
             if(getFriendId == undefined) {
                 return false;
             }else {
@@ -68,7 +67,7 @@ const Friend : FC<FriendProps> = ({friendId , name , subtitle , userPicturePath 
                     <Box
                         onClick={() => {
                             navigate(`/profile/${friendId}`);
-                            navigate(0);
+                            // navigate(0);
                         }}
                     >
                         <Typography

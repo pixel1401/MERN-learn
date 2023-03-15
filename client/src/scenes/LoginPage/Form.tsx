@@ -129,10 +129,8 @@ const Form = () => {
         const loggedIn = await data.data;
         onSubmitProps.resetForm();
         
-        console.log(loggedIn);
         
         if (loggedIn) {
-            console.log(loggedIn);
             
             dispatch(
                 setLogin({

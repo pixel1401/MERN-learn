@@ -9,22 +9,19 @@ import { FC, useEffect, useState } from "react";
 
 
 
-interface FriendListWidget {
-    userId: string
+interface FriendListWidgetProps {
+    idAntherUser? : string
 }
 
-const FriendListWidget: FC<FriendListWidget> = ({ userId }) => {
+const FriendListWidget: FC<FriendListWidgetProps> = ({idAntherUser}) => {
 
     const dispatch = useAppDispatch();
     const { palette } = useTheme();
-    const id = useAppSelector(state => state.authSlice.user?._id);
+    const userId = useAppSelector(state => state.authSlice.user?._id ?? '');
     const friends = useAppSelector((state) => state.authSlice?.friends ?? []);
 
 
-    const [friendsList, setFriendsList] = useState<User[]>([]);
-
-
-    const { data } = useGetFriendsQuery(userId, { skip: userId == '' });
+    const { data } = useGetFriendsQuery(idAntherUser ??  userId, { skip:  userId == '' });
 
 
     useEffect(() => {

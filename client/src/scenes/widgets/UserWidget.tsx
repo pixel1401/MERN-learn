@@ -14,31 +14,38 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { useGetUserInfoQuery } from "@/api";
-import {setUser as setUserDispatch} from "@/redux/features/authSlice";
+import {setUser as setUserDispatch, setUsers} from "@/redux/features/authSlice";
+import { User } from "@/models/User";
 
 
+interface UserWidget {
+    idAnotherUser? : string
+    anotherUserInfo? : User
+}
 
-
-const UserWidget: FC = () => {
+const UserWidget: FC<UserWidget> = ({idAnotherUser , anotherUserInfo}) => {
     
     const [user, setUser] = useState(null);
     const dispatch = useAppDispatch();
     const { palette } = useTheme();
     const navigate = useNavigate();
-    const token = useAppSelector((state) => state.authSlice.user?._id ?? '');
+    const userId = useAppSelector((state) => state.authSlice.user?._id ?? '');
     const dark = palette.secondary.dark;
     const medium = palette.secondary.contrastText;
     const main = palette.secondary.main;
     
-    const {data : userInfo , error } = useGetUserInfoQuery( (token ?? '').toString()   , {
-        skip : token == null || token == '' 
+    const {data : userInfo , error } = useGetUserInfoQuery( ( idAnotherUser ?? userId ?? '').toString()   , {
+        skip :    (userId == null || userId == '') 
     });
     
 
     useEffect(()=> {
-        if(userInfo) {
+        if(userInfo && idAnotherUser == undefined) {
             dispatch(setUserDispatch(userInfo))
+        }else if (userInfo && idAnotherUser) {
+            dispatch(setUsers({id : idAnotherUser , user : userInfo}))
         }
+
     } , [userInfo])
 
    
@@ -58,7 +65,7 @@ const UserWidget: FC = () => {
         <>
             <WidgetWrapper>
                 <FlexBetween>
-                    <UserImage />
+                    <UserImage img={userInfo?.picturePath} />
                     <Box marginX={'10px'} flex={'1 1 auto '} display={'flex'} flexDirection="column" justifyContent={'flex-start'} alignContent={'flex-start'} gap={'5px'} >
                         <Typography
                             variant="h4"

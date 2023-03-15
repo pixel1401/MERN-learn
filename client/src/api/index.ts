@@ -75,6 +75,29 @@ export const mainApi = createApi({
             },
         }),
 
+        getPostsUser : build.query<Post[] , string>({
+            query(userId) {
+                return {
+                    url: '/posts/getPostsUser',
+                    method: 'GET',
+                    params: {
+                        userId
+                    }
+                }
+            },
+        }),
+
+        setPost : build.query<Post[] , FormData>({
+            query(post) {
+                return {
+                    url: '/posts',
+                    method: 'POST',
+                    body : post
+                }
+            },
+        }),
+
+
 
         patchLike : build.query<Post , {id : string , userId : string}>({
             query({id , userId}) {
@@ -108,5 +131,8 @@ export const mainApi = createApi({
 })
 
 
-export const {useLazyLoginQuery , useLazyRegisterQuery , useGetUserInfoQuery ,  useGetFriendsQuery ,useGetPostsQuery , 
-      useLazyPatchLikeQuery , useLazyPatchFriendQuery} = mainApi;
+export const {useLazyLoginQuery , useLazyRegisterQuery , 
+        useGetUserInfoQuery ,  useGetFriendsQuery ,
+        useGetPostsQuery, useGetPostsUserQuery  ,useLazySetPostQuery,
+        useLazyPatchLikeQuery , useLazyPatchFriendQuery
+    } = mainApi;

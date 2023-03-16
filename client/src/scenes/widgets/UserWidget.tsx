@@ -29,7 +29,7 @@ const UserWidget: FC<UserWidget> = ({idAnotherUser , anotherUserInfo}) => {
     const dispatch = useAppDispatch();
     const { palette } = useTheme();
     const navigate = useNavigate();
-    const userId = useAppSelector((state) => state.authSlice.user?._id ?? '');
+    const userId = useAppSelector((state) => state.authSlice?.user?._id ?? '');
     const dark = palette.secondary.dark;
     const medium = palette.secondary.contrastText;
     const main = palette.secondary.main;
@@ -63,7 +63,7 @@ const UserWidget: FC<UserWidget> = ({idAnotherUser , anotherUserInfo}) => {
 
     return (
         <>
-            <WidgetWrapper>
+            <WidgetWrapper height={'fit-content'}>
                 <FlexBetween>
                     <UserImage img={userInfo?.picturePath} />
                     <Box marginX={'10px'} flex={'1 1 auto '} display={'flex'} flexDirection="column" justifyContent={'flex-start'} alignContent={'flex-start'} gap={'5px'} >

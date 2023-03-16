@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import Navbar from "@/scenes/Navbar/Navbar";
-import { Box } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import UserWidget from "./widgets/UserWidget";
 import MyPostWidget from "./widgets/MyPostwidget";
 import PostsWidget from "./widgets/PostsWdiget";
@@ -27,9 +27,9 @@ const HomePage: FC = () => {
     const users = useAppSelector((state) => state.authSlice.users);
 
     useEffect(() => {
+        if(userId == undefined) return;
         setAnotherUser((prev) => {
             let searchUser: User | undefined;
-
 
             users.find((user) => {
                 if (Object.keys(user)[0] == userId) {
@@ -39,32 +39,69 @@ const HomePage: FC = () => {
 
             return searchUser;
         })
-    }, )
+    },)
 
 
     useEffect(() => {
 
-        if (userId ) {
-            
+        if (userId) {
             dispatch(setUsers({ id: userId, user: anotherUser }));
         }
-    }, [userId , anotherUser , ])
+    }, [userId, anotherUser,])
 
+
+
+    const isDesktop = useMediaQuery("(max-width: 1382px)");
+    const isMobile = useMediaQuery("(max-width: 950px)");
 
 
     return (
-        <Box >
+        <Box>
             <Navbar />
-            <Box padding={'1rem 6%'} marginY={'25px'} display={'grid'} gridTemplateColumns="400px 1fr 350px" gap="20px"  >
-                <UserWidget idAnotherUser={userId} />
-                <Box>
-                    {userId == undefined && <MyPostWidget />}
-                    <PostsWidget idAnotherUserId={userId} />
-                </Box>
-                <Box>
-                    <AdvertWidget />
-                    <FriendListWidget idAntherUser={userId} />
-                </Box>
+            <Box padding={ isDesktop ? '1rem 15px' : '1rem 6%'} marginY={'25px'} display={'grid'} gridTemplateColumns={ isMobile ? "1fr" : isDesktop ? '400px 1fr' : "400px 1fr 350px"} gap="20px"  >
+
+                {
+                    (isDesktop) && (
+                        <>
+                            <Box display={'flex'} flexDirection="column" gap={'20px'} marginBottom={isMobile ? '60px' : ''}>
+                                <UserWidget idAnotherUser={userId} />
+                                <Box>
+                                    <AdvertWidget />
+                                    <Box marginY={'15px'}></Box>
+                                    <FriendListWidget idAntherUser={userId} />
+                                </Box>
+                            </Box>
+                            <Box  >
+                                {userId == undefined && <MyPostWidget />}
+                                <PostsWidget idAnotherUserId={userId} />
+                            </Box>
+
+                        </>
+                    )
+                }
+
+                {
+                    (isDesktop == false) && (
+                        <>
+                            <UserWidget idAnotherUser={userId} />
+                            <Box >
+                                {userId == undefined && <MyPostWidget />}
+                                <PostsWidget idAnotherUserId={userId} />
+                            </Box>
+                            <Box>
+                                <AdvertWidget />
+                                <Box marginY={'15px'}></Box>
+                                <FriendListWidget idAntherUser={userId} />
+                            </Box>
+                        </>
+                    )
+                }
+
+
+
+
+
+
             </Box>
         </Box>
     )

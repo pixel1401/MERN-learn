@@ -124,7 +124,36 @@ export const mainApi = createApi({
                 }
             },
         }),
-        
+
+
+
+        // ! MESSAGES
+        getMessages: build.query<any , {from : string , to : string }>({
+            query({from , to}) {
+                return {
+                    url: '/messages/getmsg',
+                    method: 'POST',
+                    params : {
+                        from,
+                        to
+                    }
+                }
+            },
+        }),
+
+        setMessages : build.query<any , {from : string , to : string , message : string }>({
+            query({from , to , message}) {
+                return {
+                    url: '/messages/addmsg',
+                    method: 'POST',
+                    params : {
+                        from,
+                        to ,
+                        message
+                    }
+                }
+            },
+        }),
         
 
     }),
@@ -134,5 +163,7 @@ export const mainApi = createApi({
 export const {useLazyLoginQuery , useLazyRegisterQuery , 
         useGetUserInfoQuery ,  useGetFriendsQuery ,
         useGetPostsQuery, useGetPostsUserQuery  ,useLazySetPostQuery,
-        useLazyPatchLikeQuery , useLazyPatchFriendQuery
+        useLazyPatchLikeQuery , useLazyPatchFriendQuery ,
+
+        useLazyGetMessagesQuery , useLazySetMessagesQuery
     } = mainApi;

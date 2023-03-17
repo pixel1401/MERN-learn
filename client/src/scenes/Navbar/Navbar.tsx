@@ -76,7 +76,7 @@ const Navbar: FC = () => {
                                     />)
                             }
                         </IconButton>
-                        <Message sx={{ fontSize: '25px' }} />
+                        <Message sx={{ fontSize: '25px' }}  onClick={() => navigate('/chat') } />
                         <Notifications sx={{ fontSize: '25px' }} />
                         <Help sx={{ fontSize: '25px' }} />
                         <FormControl variant="standard"  >

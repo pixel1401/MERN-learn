@@ -7,6 +7,7 @@ import ProfilePage from './scenes/ProfilePage';
 import {CssBaseline , ThemeProvider} from "@mui/material";
 import {createTheme} from "@mui/material/styles"
 import {themeSettings} from "@/theme"; 
+import ChatPage from './scenes/ChatPage/ChatPage';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path={'/'}  element={<LoginPage/>} />
           <Route path={'/home'}  element={ isAuth ? <HomePage/> :  <Navigate to="/" /> } />
           <Route path={'/profile/:userId'}  element={ isAuth ? <HomePage/> :  <Navigate to="/" /> }  />
+          <Route path={'/chat'}  element={ isAuth ? <ChatPage/> :  <Navigate to="/" /> }  />
         </Routes>
       </ThemeProvider>
   )

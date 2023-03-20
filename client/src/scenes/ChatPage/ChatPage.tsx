@@ -14,6 +14,8 @@ import { useAppSelector } from '@/redux/store/hooks';
 import { User } from '@/models/User';
 import { useLazyGetMessagesQuery, useLazySetMessagesQuery } from '@/api';
 import { useEffect, useRef } from 'react';
+import { mainApi } from '@/const';
+import { Messages } from '@/models/Messages';
 
 
 
@@ -26,7 +28,7 @@ export default function ChatPage() {
     const [open, setOpen] = React.useState(false);
     const alt = theme.palette.background.paper;
 
-    const socket = useRef();
+    const socket = useRef<any>();
 
     
     const friends = useAppSelector((state) => state.authSlice.friends);
@@ -42,19 +44,80 @@ export default function ChatPage() {
     const [message, setMessage] = React.useState('');
 
 
+    const [dialog , setDialog] = React.useState<Messages[]>([]);
+
+
     useEffect(() => {
-        // if (interlocutor) {
-        //   socket.current = io(host);
-        //   socket.current.emit("add-user", currentUser._id);
-        // }
-      }, [interlocutor]);
+        if (interlocutor) {
+          socket.current = io(mainApi);
+          socket.current.emit("add-user", interlocutor._id);
+            console.log('WORK');
+            
+        }
+    }, [interlocutor]);
 
 
 
 
 
-    const sendMessage = () => { 
+    const getCurrentChat = async ( anotherUser : User ) => {
+        let data = await fetchGetMessages({from : user?._id ?? '' , to : anotherUser._id});
+        if(data.data) {
+            setDialog(prev => {
+                let dialogs : Messages[] = [];
+                for(let a of  data.data) {
+                    dialogs.push({message : a.message , isAnother: a.fromSelf == true ? false : true})
+                }
 
+                return [...prev , ...dialogs];
+                
+            })
+        }
+
+    }
+
+    useEffect(() => {
+        if(interlocutor) {
+            getCurrentChat(interlocutor);
+        }
+    }, [interlocutor])
+
+
+
+    useEffect(() => {
+        if (socket.current) {
+          socket.current.on("msg-recieve", (msg : any) => {
+            console.log(msg);
+            
+            setDialog(prev => {
+                return [...prev , {isAnother : true , message : msg }]
+            })
+          });
+        }
+      }, []);
+
+
+
+
+    const sendMessage = async () => { 
+        if(!interlocutor ) return;
+        const currentMessage : Messages = {message : message  , isAnother : false } 
+        setDialog(prev => {
+            return [...prev , currentMessage]
+        }),
+
+        socket.current.emit("send-msg", {
+            to: interlocutor?._id,
+            from: user?._id ?? '',
+            msg :message ,
+        });
+
+        let data = await fetchSetMessage({to: interlocutor?._id,
+            from: user?._id ?? '',
+            message :message ,
+        
+        })
+        console.log(data.data);
     }
 
     return (
@@ -70,8 +133,11 @@ export default function ChatPage() {
                 </DrawerHeader>
 
                 <Box display={'flex'} flexDirection="column" >
-                    <MessageItem isAnother={true} message={'Hello'} data='5 min' />
-                    <MessageItem isAnother={false} message={'Hello'} data='5 min' />
+                    {...dialog.map((message) => {
+                        return (
+                            <MessageItem isAnother={message.isAnother} message={message.message}  />
+                        )
+                    })}
                 </Box>
 
                 <FlexBetween marginTop={'15px'}>
@@ -81,7 +147,7 @@ export default function ChatPage() {
                             label="Type your message..."
                             variant="outlined" />
                     </FormControl>
-                    <IconButton onClick={sendMessage}
+                    <IconButton onClick={() => sendMessage()}
                         aria-label="send"
                         color="primary">
                         <SendIcon />

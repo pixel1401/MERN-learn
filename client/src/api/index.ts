@@ -133,7 +133,7 @@ export const mainApi = createApi({
                 return {
                     url: '/messages/getmsg',
                     method: 'POST',
-                    params : {
+                    body : {
                         from,
                         to
                     }
@@ -146,7 +146,7 @@ export const mainApi = createApi({
                 return {
                     url: '/messages/addmsg',
                     method: 'POST',
-                    params : {
+                    body : {
                         from,
                         to ,
                         message

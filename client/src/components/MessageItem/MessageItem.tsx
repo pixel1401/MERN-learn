@@ -5,10 +5,9 @@ import { FC } from "react";
 interface MessageItemProps {
     isAnother: boolean,
     message: string,
-    data: string
 }
 
-const MessageItem: FC<MessageItemProps> = ({ isAnother, message, data }) => {
+const MessageItem: FC<MessageItemProps> = ({ isAnother, message }) => {
 
     const theme = useTheme();
 

@@ -1,4 +1,4 @@
-import { useLazyPatchLikeQuery } from "@/api";
+import { BASE_URL, useLazyPatchLikeQuery } from "@/api";
 import FlexBetween from "@/components/FlexBetween/FlexBetween"
 import Friend from "@/components/Friend/Friend";
 import WidgetWrapper from "@/components/WidgetWrapper/WidgetWrapper"
@@ -66,7 +66,7 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
                         height="auto"
                         alt="post"
                         style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-                        src={`http://localhost:3001/assets/${post.picturePath}`}
+                        src={`${BASE_URL}/assets/${post.picturePath}`}
                     />
                 )}
                 <FlexBetween mt="0.25rem">

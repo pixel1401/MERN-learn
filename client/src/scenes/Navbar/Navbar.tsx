@@ -41,6 +41,7 @@ const Navbar: FC = () => {
                         fontSize={"clamp(1rem , 2rem , 2.25rem)"}
                         marginRight={'10px'}
                         color="primary"
+                        onClick= {() => {navigate('/')}}
                         sx={{
                             "&:hover": {
                                 color: primaryLight,
@@ -77,7 +78,7 @@ const Navbar: FC = () => {
                             }
                         </IconButton>
                         <Message sx={{ fontSize: '25px' }}  onClick={() => navigate('/chat') } />
-                        <Notifications sx={{ fontSize: '25px' }} />
+                        {/* <Notifications sx={{ fontSize: '25px' }} /> */}
                         <Help sx={{ fontSize: '25px' }} />
                         <FormControl variant="standard"  >
                             <Select

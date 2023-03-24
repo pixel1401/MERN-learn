@@ -5,17 +5,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import DrawerBox, { DrawerHeader } from '@/components/Drawer/Drawer';
-import { FormControl, Grid, IconButton, TextField } from '@mui/material';
+import { Divider, FormControl, Grid, IconButton, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import FlexBetween from '@/components/FlexBetween/FlexBetween';
 import MessageItem from '@/components/MessageItem/MessageItem';
 import UserImage from '@/components/UserImage/UserImage';
 import { useAppSelector } from '@/redux/store/hooks';
 import { User } from '@/models/User';
-import { useLazyGetMessagesQuery, useLazySetMessagesQuery } from '@/api';
+import { BASE_URL, useLazyGetMessagesQuery, useLazySetMessagesQuery } from '@/api';
 import { useEffect, useRef } from 'react';
-import { mainApi } from '@/const';
 import { Messages } from '@/models/Messages';
+import WelcomeChat from '@/components/WelcomeChat';
 
 
 
@@ -30,112 +30,108 @@ export default function ChatPage() {
 
     const socket = useRef<any>();
 
-    
+
     const friends = useAppSelector((state) => state.authSlice.friends);
     const user = useAppSelector((state) => state.authSlice.user);
 
-    const [fetchGetMessages , {data : messages , isError}] = useLazyGetMessagesQuery();
-    const [fetchSetMessage , ] = useLazySetMessagesQuery();
+    const [fetchGetMessages, { data: messages, isError }] = useLazyGetMessagesQuery();
+    const [fetchSetMessage,] = useLazySetMessagesQuery();
 
 
-    const [interlocutor ,setInterlocutor ] = React.useState<User | undefined>();
+    const [interlocutor, setInterlocutor] = React.useState<User | undefined>();
 
 
     const [message, setMessage] = React.useState('');
 
 
-    const [dialog , setDialog] = React.useState<Messages[]>([]);
+    const [dialog, setDialog] = React.useState<Messages[]>([]);
 
 
     useEffect(() => {
-        if (interlocutor) {
-          socket.current = io(mainApi);
-          socket.current.emit("add-user", interlocutor._id);
-            console.log('WORK');
-            
+        if (user) {
+            socket.current = io(BASE_URL);
+            socket.current.emit("add-user", user._id);
+
+            socket.current.on("msg-recieve", (msg: any) => {
+                console.log(msg);
+                
+                setDialog(prev => {
+                    return [...prev, { isAnother: true, message: msg }]
+                })
+            });
         }
-    }, [interlocutor]);
+    }, [user]);
 
 
 
 
 
-    const getCurrentChat = async ( anotherUser : User ) => {
-        let data = await fetchGetMessages({from : user?._id ?? '' , to : anotherUser._id});
-        if(data.data) {
+    const getCurrentChat = async (anotherUser: User) => {
+        let data = await fetchGetMessages({ from: user?._id ?? '', to: anotherUser._id });
+        if (data.data) {
             setDialog(prev => {
-                let dialogs : Messages[] = [];
-                for(let a of  data.data) {
-                    dialogs.push({message : a.message , isAnother: a.fromSelf == true ? false : true})
+                let dialogs: Messages[] = [];
+                for (let a of data.data) {
+                    dialogs.push({ message: a.message, isAnother: a.fromSelf == true ? false : true })
                 }
 
-                return [...prev , ...dialogs];
-                
+                return [ ...dialogs];
+
             })
         }
 
     }
 
     useEffect(() => {
-        if(interlocutor) {
+        if (interlocutor) {
             getCurrentChat(interlocutor);
         }
     }, [interlocutor])
 
 
 
-    useEffect(() => {
-        if (socket.current) {
-          socket.current.on("msg-recieve", (msg : any) => {
-            console.log(msg);
-            
-            setDialog(prev => {
-                return [...prev , {isAnother : true , message : msg }]
-            })
-          });
-        }
-      }, []);
 
-
-
-
-    const sendMessage = async () => { 
-        if(!interlocutor ) return;
-        const currentMessage : Messages = {message : message  , isAnother : false } 
+    const sendMessage = async () => {
+        if (!interlocutor) return;
+        const currentMessage: Messages = { message: message, isAnother: false }
         setDialog(prev => {
-            return [...prev , currentMessage]
+            return [...prev, currentMessage]
         }),
 
-        socket.current.emit("send-msg", {
+            socket.current.emit("send-msg", {
+                to: interlocutor?._id,
+                from: user?._id ?? '',
+                msg: message,
+            });
+
+        let data = await fetchSetMessage({
             to: interlocutor?._id,
             from: user?._id ?? '',
-            msg :message ,
-        });
+            message: message,
 
-        let data = await fetchSetMessage({to: interlocutor?._id,
-            from: user?._id ?? '',
-            message :message ,
-        
         })
         console.log(data.data);
     }
 
     return (
-        <Box sx={{ display: 'flex' }} bgcolor={alt}>
-            <DrawerBox open={open} handleDrawer={setOpen}  friends={friends ?? []} interlocutor={interlocutor} setInterlocutor={setInterlocutor} />
+        <Box sx={{ display: 'flex' }} bgcolor={alt} paddingBottom="15px">
+            <DrawerBox open={open} handleDrawer={setOpen} friends={friends ?? []} interlocutor={interlocutor} setInterlocutor={setInterlocutor} />
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            {
+                interlocutor != undefined ? 
+                (
+                    <Box  component="main" sx={{ flexGrow: 1, m: 3 ,marginTop : "0" }}>
                 <DrawerHeader sx={{
                     display: 'flex',
                     justifyContent: 'flex-start'
                 }}>
                     <UserImage size={'30px'} />
                 </DrawerHeader>
-
+                <Divider/>
                 <Box display={'flex'} flexDirection="column" >
                     {...dialog.map((message) => {
                         return (
-                            <MessageItem isAnother={message.isAnother} message={message.message}  />
+                            <MessageItem isAnother={message.isAnother} message={message.message} />
                         )
                     })}
                 </Box>
@@ -154,6 +150,14 @@ export default function ChatPage() {
                     </IconButton>
                 </FlexBetween>
             </Box>
+                )
+
+                : (
+                    <WelcomeChat userName={user?.firstName ?? ''} />
+                )
+            }
+
+            
         </Box>
     );
 }

@@ -6,8 +6,12 @@ import { InitialValuesLogin } from '@/scenes/LoginPage/Form'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
+
+export const BASE_URL = 'http://localhost:3001';
+
+
 export const mainApi = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3001' ,
+    baseQuery: fetchBaseQuery({ baseUrl: BASE_URL ,
     
     prepareHeaders:  (headers , {getState}) => {
         const token  = (getState() as RootState ).authSlice.token ?? '';

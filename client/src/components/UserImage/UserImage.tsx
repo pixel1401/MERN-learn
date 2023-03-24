@@ -1,4 +1,4 @@
-import { mainApi } from "@/const";
+import { BASE_URL } from "@/api";
 import { Box } from "@mui/material";
 import {styled} from "@mui/system";
 import { FC } from "react";
@@ -13,7 +13,7 @@ interface UserImageProps  {
 const UserImage : FC<UserImageProps> = ({img , size = 60}) => {
     return <Box width={size}  height={size}>
         <img 
-            src= { img != null ?  `${mainApi}/assets/${img}` :  logo }
+            src= { img != null ?  `${BASE_URL}/assets/${img}` :  logo }
             alt="user"
 
             style={{objectFit: 'cover', borderRadius: '50%' }}

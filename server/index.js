@@ -131,6 +131,7 @@ io.on("connection", (socket) => {
   socket.on("send-msg", (data) => {
     const sendUserSocket = onlineUsers.get(data.to);
     if (sendUserSocket) {
+      console.log(sendUserSocket , data.msg);
       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
     }
   });

@@ -1,11 +1,11 @@
 import { FC, useEffect, useState } from "react";
 import Navbar from "@/scenes/Navbar/Navbar";
 import { Box, useMediaQuery } from "@mui/material";
-import UserWidget from "./widgets/UserWidget";
-import MyPostWidget from "./widgets/MyPostwidget";
-import PostsWidget from "./widgets/PostsWdiget";
-import AdvertWidget from "./widgets/AdvertWidget";
-import FriendListWidget from "./widgets/FriendListWidget";
+import UserWidget from "@/scenes/widgets/UserWidget";
+import MyPostWidget from "@/scenes/widgets/MyPostwidget";
+import PostsWidget from "@/scenes/widgets/PostsWdiget";
+import AdvertWidget from "@/scenes/widgets/AdvertWidget";
+import FriendListWidget from "@/scenes/widgets/FriendListWidget";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import { useParams } from "react-router-dom";
 import { useIsHaveUser } from "@/hook/useIsHaveUser";
@@ -57,7 +57,7 @@ const HomePage: FC = () => {
 
     return (
         <Box>
-            <Navbar />
+            {/* <Navbar /> */}
             <Box padding={ isDesktop ? '1rem 15px' : '1rem 6%'} marginY={'25px'} display={'grid'} gridTemplateColumns={ isMobile ? "1fr" : isDesktop ? '400px 1fr' : "400px 1fr 350px"} gap="20px"  >
 
                 {

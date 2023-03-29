@@ -1,4 +1,4 @@
-{
+{ 
   "name": "client",
   "private": true,
   "version": "0.0.0",
@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "deploy": "gh-pages -d dist",
+    "predeploy": "npm run build",
     "preview": "vite preview"
   },
   "dependencies": {

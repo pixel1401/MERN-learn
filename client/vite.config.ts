@@ -4,6 +4,7 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: 'https://pixel1401.github.io/MERN-learn',
   plugins: [react()],
   resolve : {
     alias : {

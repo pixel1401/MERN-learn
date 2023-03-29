@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/redux/store/hooks'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {  Navigate, Route, Routes , } from 'react-router-dom';
 import HomePage from '@/scenes/HomePage';
-import LoginPage from './scenes/LoginPage';
-import ProfilePage from './scenes/ProfilePage';
+import LoginPage from '@/scenes/LoginPage';
+import ProfilePage from '@/scenes/ProfilePage';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles"
 import { themeSettings } from "@/theme";
-import ChatPage from './scenes/ChatPage/ChatPage';
-import Layout from './scenes/Layout';
+import ChatPage from '@/scenes/ChatPage/ChatPage';
+import Layout from '@/scenes/Layout';
 
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Routes>
+      <Routes  >
         <Route path={'/auth'} element={<LoginPage />} />
         {/* <Route path={'/home'} element={isAuth ? <Layout /> : <Navigate to="/" />} /> */}
         <Route path={'/'}  element={isAuth ? <Layout /> : <Navigate to="/auth" />}>

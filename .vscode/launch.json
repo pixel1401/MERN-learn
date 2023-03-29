@@ -35,7 +35,8 @@
             "name": "Run Script: dev",
             "request": "launch",
             "command": "npm run dev",
-            "cwd": "${workspaceFolder}\\client"
+            "cwd": "${workspaceFolder}\\client",
+            "host": "127.0.0.1:5174"
         }
     ]
 }

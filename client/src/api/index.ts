@@ -7,7 +7,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
 
-export const BASE_URL = 'https://mern-learn.onrender.com';
+export const BASE_URL = 'http://localhost:3001';
+// https://mern-learn.onrender.com
 // http://localhost:3001
 
 export const mainApi = createApi({
@@ -158,6 +159,18 @@ export const mainApi = createApi({
                 }
             },
         }),
+
+
+        // ! UPDATE USER CURRENT INFO
+        updateCurrentUserInfo  : build.query<any , FormData>({
+            query(formData) {
+                return {
+                    url: '/userInfo',
+                    method: 'POST',
+                    body : formData
+                }
+            },
+        })
         
 
     }),
@@ -169,5 +182,7 @@ export const {useLazyLoginQuery , useLazyRegisterQuery ,
         useGetPostsQuery, useGetPostsUserQuery  ,useLazySetPostQuery,
         useLazyPatchLikeQuery , useLazyPatchFriendQuery ,
 
-        useLazyGetMessagesQuery , useLazySetMessagesQuery
+        useLazyGetMessagesQuery , useLazySetMessagesQuery ,
+
+        useLazyUpdateCurrentUserInfoQuery
     } = mainApi;

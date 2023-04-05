@@ -7,7 +7,7 @@ import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 import http from 'http';
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
@@ -24,12 +24,19 @@ import { verifyToken } from "./middleware/auth.js";
 import User from "./models/User.js";
 import Post from "./models/Post.js";
 
+import {updateInfoCurrentUser} from "./controllers/users.js";
+
 import { users, posts } from "./data/index.js"
 import { getUsers } from "./controllers/users.js";
-import { Server } from "socket.io";
+import { Server } from "socket.io"; 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import __dirname from "./dirname.js";
+
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+console.log(__dirname);
 
 dotenv.config();
 const app = express();
@@ -52,7 +59,14 @@ app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 // FILE STORAGE
 const storageConfig = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/assets');
+    if(file.fieldname == 'picture') {
+      cb(null, process.env.ASSETS_IMG);
+    }else if (file.fieldname == 'audio') {
+      cb(null, process.env.ASSETS_AUDIO);
+    }else {
+      cb(null, false)
+    }
+
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -65,7 +79,9 @@ const upload = multer({ storage: storageConfig });
 
 // ROUTES WITH FILES
 app.post("/auth/register", upload.single("picture"), register);
-app.post("/posts", verifyToken, upload.single("picture"), createPost);
+app.post("/posts", verifyToken, upload.fields([{name : 'picture'} , {name : 'audio'}]),   createPost);
+
+app.post('/userInfo' , verifyToken , upload.single("picture") ,  updateInfoCurrentUser )
 
 
 

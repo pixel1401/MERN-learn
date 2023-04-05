@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import Navbar from "@/scenes/Navbar/Navbar";
 import { Box, useMediaQuery } from "@mui/material";
-import UserWidget from "@/scenes/widgets/UserWidget";
+import UserWidget from "@/scenes/widgets/UserWidget/UserWidget";
 import MyPostWidget from "@/scenes/widgets/MyPostwidget";
 import PostsWidget from "@/scenes/widgets/PostsWdiget";
 import AdvertWidget from "@/scenes/widgets/AdvertWidget";

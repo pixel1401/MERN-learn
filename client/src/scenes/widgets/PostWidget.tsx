@@ -21,7 +21,7 @@ interface PostWidgetProps {
 }
 
 const PostWidget: FC<PostWidgetProps> = ({ post }) => {
-    const [fetchPatchLike , {data}] = useLazyPatchLikeQuery();
+    const [fetchPatchLike, { data }] = useLazyPatchLikeQuery();
 
     const [isComments, setIsComments] = useState(false);
     const dispatch = useAppDispatch();
@@ -31,9 +31,9 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
     const likeCount = Object.keys(post.likes).length;
 
 
-   
 
-    
+
+
 
     const { palette } = useTheme();
     const main = palette.secondary.contrastText;
@@ -41,8 +41,8 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
 
 
     const patchLike = async () => {
-        let data = await fetchPatchLike({id : post._id , userId : loggedInUserId});
-        if(data.data) {
+        let data = await fetchPatchLike({ id: post._id, userId: loggedInUserId });
+        if (data.data) {
             dispatch(patchLikePost(data.data))
         }
     }
@@ -66,9 +66,22 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
                         height="auto"
                         alt="post"
                         style={{ borderRadius: "0.75rem", marginTop: "0.75rem" }}
-                        src={`${BASE_URL}/assets/${post.picturePath}`}
+                        src={`${BASE_URL}/assets/img/${post.picturePath}`}
                     />
                 )}
+                {
+                    post.audioPath && (
+                        <Box display={'flex'} justifyContent={'center'} marginTop={'10px'}>
+                            <audio
+                                controls
+                                src={`${BASE_URL}/assets/audio/${post.audioPath}`}>
+                                <a href={`${BASE_URL}/assets/audio/${post.audioPath}`}>
+                                </a>
+                            </audio>
+                        </Box>
+
+                    )
+                }
                 <FlexBetween mt="0.25rem">
                     <FlexBetween gap="1rem">
                         <FlexBetween gap="0.3rem">

@@ -13,7 +13,7 @@ interface UserImageProps  {
 const UserImage : FC<UserImageProps> = ({img , size = 60}) => {
     return <Box width={size}  height={size}>
         <img 
-            src= { img != null ?  `${BASE_URL}/assets/${img}` :  logo }
+            src= { img != null ?  `${BASE_URL}/assets/img/${img}` :  logo }
             alt="user"
 
             style={{objectFit: 'cover', borderRadius: '50%' }}

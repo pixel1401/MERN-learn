@@ -7,6 +7,7 @@ export interface Post {
     description: string;
     picturePath: string;
     userPicturePath: string;
+    audioPath : string;
     likes: Likes;
     comments: string[];
     __v: number;

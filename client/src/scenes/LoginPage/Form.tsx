@@ -16,7 +16,7 @@ import Dropzone, { useDropzone } from "react-dropzone";
 import FlexBetween from "@/components/FlexBetween/FlexBetween";
 import { setLogin } from "@/redux/features/authSlice";
 import { useLazyLoginQuery, useLazyRegisterQuery } from "@/api";
-
+import {  toast } from 'react-toastify';
 
 
 
@@ -104,6 +104,7 @@ const Form = () => {
         //     }
         // );
         // const savedUser = await savedUserResponse.json();
+        const idToast = toast.loading("Please wait...")
 
         const savedUserResponse = await fetchRegister(formData);
 
@@ -112,7 +113,10 @@ const Form = () => {
         onSubmitProps.resetForm();
 
         if (savedUser) {
+            toast.update(idToast, { render: "All is good", type: "success", isLoading: false  , autoClose: 2000});
             setPageType("login");
+        }else {
+            toast.update(idToast, { render: "Error", type: "error", isLoading: false , autoClose: 2000,  });
         }
     };
 
@@ -123,7 +127,10 @@ const Form = () => {
         //     body: JSON.stringify(values),
         // });
 
+        const idToast = toast.loading("Please wait...")
+
         let data = await fetchLogin(values);
+
 
         
         const loggedIn = await data.data;
@@ -131,7 +138,7 @@ const Form = () => {
         
         
         if (loggedIn) {
-            
+            toast.update(idToast, { render: "All is good", type: "success", isLoading: false  , autoClose: 2000});
             dispatch(
                 setLogin({
                     user: loggedIn.user,
@@ -139,6 +146,8 @@ const Form = () => {
                 })
             );
             navigate("/");
+        }else {
+            toast.update(idToast, { render: "Error", type: "error", isLoading: false , autoClose: 2000,  });
         }
     };
 
@@ -231,7 +240,7 @@ const Form = () => {
                                             setFieldValue("picture", acceptedFiles[0])
                                         }
                                     >
-                                        {({ getRootProps, getInputProps   }) => (
+                                       {({ getRootProps, getInputProps   }) => (
                                             <Box
                                                 {...getRootProps()}
                                                 border={`2px dashed ${palette.primary.main}`}
@@ -248,7 +257,7 @@ const Form = () => {
                                                     </FlexBetween>
                                                 )}
                                             </Box>
-                                        )}
+                                        )} 
                                     </Dropzone>
                                 </Box>
                             </>

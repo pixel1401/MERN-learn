@@ -17,6 +17,7 @@ import WidgetWrapper from "@/components/WidgetWrapper/WidgetWrapper";
 import Dropzone from "react-dropzone";
 import { useLazySetPostQuery } from "@/api";
 import { setPosts } from "@/redux/features/authSlice";
+import { toast } from "react-toastify";
 
 
 
@@ -25,11 +26,19 @@ const MyPostWidget: FC = () => {
   const dispatch = useAppDispatch();
   const [isImage, setIsImage] = useState(false);
 
+  const [isAudio, setIsAudio] = useState(false);
+
   const [image, setImage] = useState<File | null>(null);
+
+  const [audio, setAudio] = useState<File | null>(null);
+
 
   const [post, setPost] = useState("");
   const { palette } = useTheme();
   const _id = useAppSelector((state) => state.authSlice.user?._id ?? '');
+
+  const picturePath = useAppSelector((state) => state.authSlice.user?.picturePath);
+
   const token = useAppSelector((state) => state.authSlice.token);
   const isNonMobileScreens = useMediaQuery("(min-width: 1000px)");
   const mediumMain = palette.secondary.main;
@@ -48,12 +57,29 @@ const MyPostWidget: FC = () => {
       formData.append("picture", image);
       formData.append("picturePath", image.name);
     }
+    
+    if(audio) {
+      formData.append("audio", audio);
+      formData.append("audioPath", audio.name);
+    }
+
+
+    const idToast = toast.loading("Please wait...")
 
     let data = await fetchSetPost(formData);
 
-    if(data.data) {
+    if (data.data) {
+      toast.update(idToast, { render: "Post uploaded", type: "success", isLoading: false  , autoClose: 2000});
       dispatch(setPosts(data.data));
+    }else {
+      toast.update(idToast, { render: "Error", type: "error", isLoading: false , autoClose: 2000,  });
     }
+
+
+    setImage(null);
+    setAudio(null);
+    setPost('');
+
   }
 
 
@@ -61,7 +87,7 @@ const MyPostWidget: FC = () => {
   return (
     <WidgetWrapper height={'fit-content'}>
       <FlexBetween gap="1.5rem">
-        <UserImage />
+        <UserImage img={picturePath} />
         <InputBase
           placeholder="What's on your mind..."
           onChange={(e) => setPost(e.target.value)}
@@ -95,7 +121,7 @@ const MyPostWidget: FC = () => {
                   width="100%"
                   sx={{ "&:hover": { cursor: "pointer" } }}
                 >
-                  <input {...getInputProps()} />
+                  <input {...getInputProps()}  />
                   {!image ? (
                     <p>Add Image Here</p>
                   ) : (
@@ -119,10 +145,68 @@ const MyPostWidget: FC = () => {
         </Box>
       )}
 
+      {
+        isAudio && (
+          <Box
+            border={`1px solid ${medium}`}
+            borderRadius="5px"
+            mt="1rem"
+            p="1rem"
+          >
+            <Dropzone
+              accept={{ accepted: ['audio/*'] }}
+              multiple={false}
+              onDrop={(acceptedFiles) => setAudio(acceptedFiles[0])}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <FlexBetween>
+                  <Box
+                    {...getRootProps()}
+                    border={`2px dashed ${palette.primary.main}`}
+                    p="1rem"
+                    width="100%"
+                    sx={{ "&:hover": { cursor: "pointer" } }}
+                  >
+                    <input {...getInputProps({accept : 'audio/*' })} />
+                    {!audio ? (
+                      <p>Add Audio Here</p>
+                    ) : (
+                      <FlexBetween>
+                        <Typography>{audio.name}</Typography>
+                        <EditOutlined />
+                      </FlexBetween>
+                    )}
+                  </Box>
+                  {audio && (
+                    <IconButton
+                      onClick={() => setAudio(null)}
+                      sx={{ width: "15%" }}
+                    >
+                      <DeleteOutlined />
+                    </IconButton>
+                  )}
+                </FlexBetween>
+              )}
+            </Dropzone>
+          </Box>
+        )
+      }
+
+
       <Divider sx={{ margin: "1.25rem 0" }} />
 
       <FlexBetween>
-        <FlexBetween gap="0.25rem" onClick={() => setIsImage(!isImage)}>
+        <FlexBetween gap="0.25rem" onClick={() => setIsImage(
+          state => {
+            if (state) {
+              setImage(null);
+              return !state;
+            } else {
+              return !state;
+            }
+          }
+
+        )}>
           <ImageOutlined sx={{ color: mediumMain }} />
           <Typography
             color={mediumMain}
@@ -132,9 +216,9 @@ const MyPostWidget: FC = () => {
           </Typography>
         </FlexBetween>
 
-        {isNonMobileScreens ? (
-          <>
-            <FlexBetween gap="0.25rem">
+
+        <>
+          {/* <FlexBetween gap="0.25rem">
               <GifBoxOutlined sx={{ color: mediumMain }} />
               <Typography color={mediumMain}>Clip</Typography>
             </FlexBetween>
@@ -142,18 +226,23 @@ const MyPostWidget: FC = () => {
             <FlexBetween gap="0.25rem">
               <AttachFileOutlined sx={{ color: mediumMain }} />
               <Typography color={mediumMain}>Attachment</Typography>
-            </FlexBetween>
+            </FlexBetween> */}
 
-            <FlexBetween gap="0.25rem">
-              <MicOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Audio</Typography>
-            </FlexBetween>
-          </>
-        ) : (
-          <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }} />
+          <FlexBetween gap="0.25rem" onClick={() => {
+            setIsAudio(state => {
+              if (state) {
+                setAudio(null);
+                return !state;
+              } else {
+                return !state;
+              }
+            })
+          }} >
+            <MicOutlined sx={{ color: mediumMain }} />
+            <Typography color={mediumMain}>Audio</Typography>
           </FlexBetween>
-        )}
+        </>
+
 
         <Button
           disabled={!post}

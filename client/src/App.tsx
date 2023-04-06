@@ -9,6 +9,8 @@ import { createTheme } from "@mui/material/styles"
 import { themeSettings } from "@/theme";
 import ChatPage from '@/scenes/ChatPage/ChatPage';
 import Layout from '@/scenes/Layout';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function App() {
@@ -22,6 +24,18 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       <Routes  >
         <Route path={'/auth'} element={<LoginPage />} />
         {/* <Route path={'/home'} element={isAuth ? <Layout /> : <Navigate to="/" />} /> */}

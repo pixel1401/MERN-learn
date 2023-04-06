@@ -81,7 +81,7 @@ const upload = multer({ storage: storageConfig });
 app.post("/auth/register", upload.single("picture"), register);
 app.post("/posts", verifyToken, upload.fields([{name : 'picture'} , {name : 'audio'}]),   createPost);
 
-app.post('/userInfo' , verifyToken , upload.single("picture") ,  updateInfoCurrentUser )
+app.post('/userInfo' , verifyToken , upload.single("picture") ,  updateInfoCurrentUser ) 
 
 
 

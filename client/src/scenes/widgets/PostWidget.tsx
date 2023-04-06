@@ -1,9 +1,9 @@
-import { BASE_URL, useLazyPatchLikeQuery } from "@/api";
+import { BASE_URL, useLazyPatchLikeQuery , useLazyPatchCommentQuery } from "@/api";
 import FlexBetween from "@/components/FlexBetween/FlexBetween"
 import Friend from "@/components/Friend/Friend";
 import WidgetWrapper from "@/components/WidgetWrapper/WidgetWrapper"
 import { Post } from "@/models/Post";
-import { patchLikePost } from "@/redux/features/authSlice";
+import { addComment, patchLikePost , } from "@/redux/features/authSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/store/hooks";
 import {
     ChatBubbleOutlineOutlined,
@@ -11,8 +11,9 @@ import {
     FavoriteOutlined,
     ShareOutlined,
 } from "@mui/icons-material";
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material"
-import { FC, useEffect, useState } from "react"
+import { Box, Button, Divider, IconButton, TextField, Typography, useTheme } from "@mui/material"
+import { FC, FormEvent, useEffect, useState } from "react"
+import { toast } from "react-toastify";
 
 
 
@@ -31,7 +32,8 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
     const likeCount = Object.keys(post.likes).length;
 
 
-
+    const [comment, setComment] = useState('');
+    const [fetchPatchComment] = useLazyPatchCommentQuery();
 
 
 
@@ -44,6 +46,23 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
         let data = await fetchPatchLike({ id: post._id, userId: loggedInUserId });
         if (data.data) {
             dispatch(patchLikePost(data.data))
+        }
+    }
+
+
+    const sendComment = async (e : FormEvent)=> {
+        e.preventDefault();
+        dispatch(addComment({id : post._id , comment : comment}));
+        setComment('');
+
+        const idToast = toast.loading("Please wait...")
+
+        let data = await fetchPatchComment({id : post._id , comment : comment});
+        
+        if(data.data) {
+            toast.update(idToast, { render: "Post uploaded", type: "success", isLoading: false  , autoClose: 2000});
+        }else {
+            toast.update(idToast, { render: "Error", type: "error", isLoading: false , autoClose: 2000,  });
         }
     }
 
@@ -118,6 +137,32 @@ const PostWidget: FC<PostWidgetProps> = ({ post }) => {
                             </Box>
                         ))}
                         <Divider />
+                        <form onSubmit={sendComment}>
+                            <FlexBetween gap="5px">
+                                <TextField
+                                    required={true}
+                                    label="Send Message"
+                                    onChange={(e) => setComment(e.target.value)}
+                                    value={comment}
+                                    name="message"
+                                    sx={{
+                                        flex : '1 1 auto'
+                                    }}
+                                />
+                                <Button
+                                    type="submit"
+                                    sx={{
+                                        color: palette.background.paper,
+                                        backgroundColor: palette.primary.main,
+                                        height: '52px'
+                                    }}
+                                >
+                                    Send
+                                </Button>
+                            </FlexBetween>
+                        </form>
+
+
                     </Box>
                 )}
             </WidgetWrapper>

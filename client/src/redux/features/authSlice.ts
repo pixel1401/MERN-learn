@@ -101,6 +101,15 @@ export const authSlice = createSlice({
             state.posts = updatePosts;  
         },
 
+        addComment : (state , action : PayloadAction<{id : string , comment : string}>) => {
+            if(state.posts == null) return;
+            for(let a of state.posts) {
+                if(a._id === action.payload.id) {
+                    a.comments.push(action.payload.comment)
+                }
+            }
+        },
+
         patchLikePost: (state , action : PayloadAction<Post>) => {
             if(state.posts == null) return;
             state.posts = state.posts.map((post ) => {
@@ -114,5 +123,5 @@ export const authSlice = createSlice({
     }
 })
 
-export const {setMode , setUser , setUsers , setLogin , setLogout , setFriends , setPosts , setPost , patchLikePost} = authSlice.actions;
+export const {setMode , setUser , setUsers , setLogin , setLogout , setFriends , setPosts , setPost , addComment , patchLikePost} = authSlice.actions;
 export default authSlice.reducer;

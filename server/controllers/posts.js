@@ -92,3 +92,20 @@ export const likePost = async (req , res) => {
         res.status(405).json({message: err.message});
     }
 }
+
+
+
+export const addComment = async (req , res) => {
+    try {
+        const {id , comment} = req.query;
+
+        const updatedPost = await Post.findByIdAndUpdate(id , {
+            $push: {comments : comment}
+        });
+
+        res.status(200).json(updatedPost)
+
+    } catch (error) {
+        res.status(405).json({message: err.message})
+    }
+}

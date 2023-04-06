@@ -116,6 +116,17 @@ export const mainApi = createApi({
             },
         }),
 
+        patchComment : build.query<Post , {id : string , comment : string}>({
+            query({id , comment}) {
+                return {
+                    url: '/posts/addComment',
+                    method: 'PATCH',
+                    params : {
+                        id , comment
+                    }
+                }
+            },
+        }),
 
         patchFriend : build.query<User[] , {id : string , friendId : string }>({
             query({id , friendId}) {
@@ -179,8 +190,9 @@ export const mainApi = createApi({
 
 export const {useLazyLoginQuery , useLazyRegisterQuery , 
         useGetUserInfoQuery ,  useGetFriendsQuery ,
+
         useGetPostsQuery, useGetPostsUserQuery  ,useLazySetPostQuery,
-        useLazyPatchLikeQuery , useLazyPatchFriendQuery ,
+        useLazyPatchLikeQuery , useLazyPatchFriendQuery , useLazyPatchCommentQuery ,
 
         useLazyGetMessagesQuery , useLazySetMessagesQuery ,
 

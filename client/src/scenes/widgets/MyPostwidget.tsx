@@ -74,6 +74,12 @@ const MyPostWidget: FC = () => {
     }else {
       toast.update(idToast, { render: "Error", type: "error", isLoading: false , autoClose: 2000,  });
     }
+
+
+    setImage(null);
+    setAudio(null);
+    setPost('');
+
   }
 
 

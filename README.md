@@ -14,3 +14,6 @@
 
 
 ![Vite + React + TS - Google Chrome 2023-04-07 09-42-18](https://user-images.githubusercontent.com/70021923/230542532-daf5534b-0815-47aa-acbe-e66a12e0d54c.gif)
+
+
+![vite-react-ts-google-chrome-2023-04-07-09-25-12_YPZvD9hO](https://user-images.githubusercontent.com/70021923/230543113-75f16d56-9349-4793-ab5c-10c59116af9b.gif)

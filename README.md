@@ -11,3 +11,6 @@
 
 
 ![Vite + React + TS - Google Chrome 2023-04-06 13-18-12 (online-video-cutter com) (1)](https://user-images.githubusercontent.com/70021923/230541963-61704dcd-7f45-4774-a788-a0b1dbb4cfd3.gif)
+
+
+![Vite + React + TS - Google Chrome 2023-04-07 09-42-18](https://user-images.githubusercontent.com/70021923/230542532-daf5534b-0815-47aa-acbe-e66a12e0d54c.gif)
